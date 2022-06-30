@@ -1,0 +1,28 @@
+import React, { useState } from 'react';
+import moment from "moment";
+
+export const InputDate = (props) => {
+    const { id, dates, setDates } = props;
+    const [error, setError] = useState('')
+    const handleDates = (ev) => {
+        const date = ev.currentTarget.value;
+        if (id === 'endDate' && moment(date).isBefore(dates.startDate)) {
+            setError('End date must be after')
+            setDates({ ...dates, endDate: null })
+            return false;
+        } else {
+            setError('');
+        }
+        setDates({ ...dates, [id]: date, updated: true })
+
+    }
+    return (
+        <div>
+            <label htmlFor={id}>
+                {id}
+                <input type="date" id={id} onChange={(ev) => handleDates(ev)} />
+            </label>
+            {error}
+        </div>
+    )
+}

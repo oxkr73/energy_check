@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
-import { queryApi } from "./utils/utils";
+import { getEnergyData } from "./utils/utils";
 import { ItemList } from "./components/ItemList";
+import { InputDate } from "./components/InputDate/InputDate";
 
 function App() {
   const [energyData, setEnergyData] = useState(null);
-  async function getEnergyData() {
-    try {
-      const data = await queryApi("https://apidatos.ree.es/es/datos/mercados/precios-mercados-tiempo-real?start_date=2022-06-01T00:00&end_date=2022-06-01T23:59&time_trunc=hour");
-      setEnergyData(data);
-    } catch (error) {
-      console.log(error);
-    }
-  }
+  const [dates, setDates] = useState({ startDate: null, endDate: null, updated: null });
+
   useEffect(() => {
-    if (!energyData) {
-      getEnergyData();
+    if (dates.startDate && dates.endDate && dates.updated) {
+      getEnergyData(dates.startDate, dates.endDate).then(resp => setEnergyData(resp));
+
     }
-  }, [energyData]);
+    if (!dates.startDate || !dates.endDate) {
+      setEnergyData();
+    }
+  }, [dates]);
+
 
   return (
     <div className="App">
+      <InputDate id="startDate" dates={dates} setDates={setDates} />
+      <InputDate id="endDate" dates={dates} setDates={setDates} />
       {
         energyData &&
         <div>
